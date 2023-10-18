@@ -2,27 +2,70 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <link rel="icon" type="image/svg+xml" href="/genesis-mini.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <title>DicomVix Viewer</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <input type="checkbox" id="drawer-toggle" name="drawer-toggle" />
-    <label for="drawer-toggle" id="drawer-toggle-label"></label>
-    <header>Header</header>
-    <nav id="drawer">
-      
-    </nav>
-    <div
-      id="content"
-      style="margin-top: 50px; display: flex; justify-content: center"
-    >
-      <div
-        id="main-image"
-        style="width: 100%; height: 500px; position: relative"
-      ></div>
+    <div id="loading">
+      <img src="/genesis-mini.svg" alt="Genesis Viewer" height="50px" />
+      <progress id="loading-progress"></progress>
     </div>
-    <script type="module" src="/main.js"></script>
+    <input type="checkbox" id="drawer-toggle" name="drawer-toggle" />
+    <label for="drawer-toggle" id="drawer-toggle-label"
+      ><img src="/icons/series-active.svg" alt="Genesis Viewer" height="30px"
+    /></label>
+    <header>
+      <img src="/genesis.png" alt="Genesis Viewer" height="30px" />
+    </header>
+    <nav id="drawer"></nav>
+    <div id="content">
+      <div id="study-info">
+        <span>DOUGLAS VIEIRA GOMES (30Y) - M</span>
+        <span>MRN: 52432543</span>
+        <span>TC CRANIO S/C | 05/07/2023</span>
+      </div>
+
+      <div id="main-image"></div>
+
+      <div id="stack-buttons">
+        <div class="icon-btn" id="prev-image">
+          <img src="/icons/chevron-prev.svg" height="25px" alt="Prev image" />
+        </div>
+        <span>2/2</span>
+        <div class="icon-btn" id="next-image">
+          <img src="/icons/chevron-next.svg" height="25px" alt="Next image" />
+        </div>
+      </div>
+
+      <div class="tools-container">
+        <div class="tool">
+          <img src="/icons/tool-window-level.svg" alt="Window Level" />
+          <span>Window Level</span>
+        </div>
+        <div class="tool">
+          <img src="/icons/tool-zoom.svg" alt="Zoom" />
+          <span>Zoom</span>
+        </div>
+        <div class="tool">
+          <img src="/icons/tool-length.svg" alt="Length" />
+          <span>Length</span>
+        </div>
+        <div class="tool">
+          <img src="/icons/tool-angle.svg" alt="Angle" />
+          <span>Angle</span>
+        </div>
+        <div class="tool">
+          <img src="/icons/cobb-angle.svg" alt="Cobb Angle" />
+          <span>Cobb Angle</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

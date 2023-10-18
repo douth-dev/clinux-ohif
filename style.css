@@ -19,6 +19,7 @@ html,
 body {
   height: 100%;
   overflow: hidden;
+  touch-action: none;
 }
 
 /* gets the actual input out of the way; 
@@ -45,18 +46,14 @@ body {
   z-index: 1;
 }
 
-/* adds our "hamburger" menu icon */
+/* drawer icon */
 
-#drawer-toggle-label:before {
-  content: "";
-  display: block;
+#drawer-toggle-label > img {
   position: absolute;
-  height: 2px;
+  height: 24px;
   width: 24px;
-  background: #8d8d8d;
   left: 13px;
-  top: 18px;
-  box-shadow: 0 6px 0 #8d8d8d, 0 12px 0 #8d8d8d;
+  top: 13px;
 }
 
 header {
@@ -64,7 +61,7 @@ header {
   position: fixed;
   left: 0px;
   background: #efefef;
-  padding: 10px 10px 10px 50px;
+  padding: 10px 10px 0px 50px;
   font-size: 30px;
   line-height: 30px;
   z-index: 0;
@@ -84,19 +81,23 @@ header {
   overflow-y: scroll;
   padding: 20px;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 /* actual page content pane */
 
-#page-content {
+#content {
   margin-left: 0px;
   margin-top: 50px;
   width: 100%;
   height: calc(100% - 50px);
-  overflow-x: hidden;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  padding: 20px;
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  user-select: none;
 }
 
 /* checked styles (menu open state) */
@@ -116,7 +117,7 @@ header {
   left: 0px;
 }
 
-#drawer-toggle:checked ~ #page-content {
+#drawer-toggle:checked ~ #content {
   margin-left: 300px;
 }
 
@@ -155,7 +156,75 @@ header {
     padding: 20px;
   }
 
-  #drawer-toggle:checked ~ #page-content {
+  #drawer-toggle:checked ~ #content {
     margin-left: calc(100% - 50px);
   }
+}
+
+#loading {
+  position: absolute;
+  background-color: #000000;
+  top: 0px;
+  bottom: 0px;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  visibility: hidden;
+}
+
+progress {
+  accent-color: #5acce6;
+}
+
+#study-info {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #000000;
+  color: #5acce6;
+}
+
+#main-image {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  background-color: black;
+}
+
+.tools-container {
+  display: flex;
+  height: 65px;
+  background-color: #ffffff;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.tool {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 50px;
+  align-items: center;
+}
+
+.tool > img {
+  height: 24px;
+}
+
+.tool > span {
+  font-size: 13px;
+  text-align: center;
+}
+
+#stack-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #ffffff;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  align-items: center;
 }

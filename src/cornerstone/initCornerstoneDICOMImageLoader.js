@@ -1,7 +1,7 @@
-import dicomParser from 'dicom-parser';
-import * as cornerstone from '@cornerstonejs/core';
-import * as cornerstoneTools from '@cornerstonejs/tools';
-import cornerstoneDICOMImageLoader from '@cornerstonejs/dicom-image-loader';
+import dicomParser from "dicom-parser";
+import * as cornerstone from "@cornerstonejs/core";
+import * as cornerstoneTools from "@cornerstonejs/tools";
+import cornerstoneDICOMImageLoader from "@cornerstonejs/dicom-image-loader";
 
 window.cornerstone = cornerstone;
 window.cornerstoneTools = cornerstoneTools;
