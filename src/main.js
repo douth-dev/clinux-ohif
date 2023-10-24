@@ -12,7 +12,7 @@ import {
   StackScrollTool,
   ZoomTool,
   LengthTool,
-  RectangleROITool,
+  CobbAngleTool,
   AngleTool,
 } from "@cornerstonejs/tools";
 import { ViewportType } from "@cornerstonejs/core/dist/esm/enums";
@@ -29,7 +29,7 @@ async function main() {
   await init();
 
   const toolGroupId = "MAIN_IMAGE_TOOL_GROUP";
-  cornerstoneTools.addTool(RectangleROITool);
+  cornerstoneTools.addTool(CobbAngleTool);
   cornerstoneTools.addTool(LengthTool);
   cornerstoneTools.addTool(PanTool);
   cornerstoneTools.addTool(WindowLevelTool);
@@ -38,7 +38,7 @@ async function main() {
   cornerstoneTools.addTool(AngleTool);
 
   const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
-  toolGroup.addTool(RectangleROITool.toolName);
+  toolGroup.addTool(CobbAngleTool.toolName);
   toolGroup.addTool(LengthTool.toolName);
   toolGroup.addTool(WindowLevelTool.toolName);
   toolGroup.addTool(PanTool.toolName);
@@ -93,7 +93,7 @@ toolGroup.addTool(ZoomTool.toolName);
 toolGroup.addTool(StackScrollTool.toolName);
 toolGroup.addTool(AngleTool.toolName); */
 
-  toolGroup.setToolPassive(RectangleROITool.toolName);
+  toolGroup.setToolPassive(CobbAngleTool.toolName);
   toolGroup.setToolPassive(LengthTool.toolName);
   toolGroup.setToolPassive(WindowLevelTool.toolName);
   toolGroup.setToolPassive(ZoomTool.toolName);
@@ -103,9 +103,11 @@ toolGroup.addTool(AngleTool.toolName); */
   const renderingEngineId = "myRenderingEngine";
   const renderingEngine = new RenderingEngine(renderingEngineId);
 
-  const series = await fetch(
-    "https://bioscan.redirectme.net/clinuxview/pathpacs/52432543/1011981"
-  ).then((response) => response.json());
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const json = urlParams.get("json");
+
+  const series = await fetch(json).then((response) => response.json());
 
   loadingProgress.max = series.length;
   loadingProgress.value = 0;
@@ -387,7 +389,7 @@ toolGroup.addTool(AngleTool.toolName); */
 
     toolGroup.setToolPassive(selectedToolName);
 
-    toolGroup.setToolActive(RectangleROITool.toolName, {
+    toolGroup.setToolActive(CobbAngleTool.toolName, {
       bindings: [
         {
           mouseButton: MouseBindings.Primary,
@@ -395,7 +397,7 @@ toolGroup.addTool(AngleTool.toolName); */
       ],
     });
 
-    selectedToolName = RectangleROITool.toolName;
+    selectedToolName = CobbAngleTool.toolName;
   });
 }
 
