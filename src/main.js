@@ -1,4 +1,9 @@
-import { RenderingEngine, imageLoader } from "@cornerstonejs/core";
+import {
+  RenderingEngine,
+  imageLoader,
+  Enums,
+  utilities,
+} from "@cornerstonejs/core";
 import * as cornerstoneTools from "@cornerstonejs/tools";
 import {
   ToolGroupManager,
@@ -7,7 +12,7 @@ import {
   StackScrollTool,
   ZoomTool,
   LengthTool,
-  CobbAngleTool,
+  RectangleROITool,
   AngleTool,
 } from "@cornerstonejs/tools";
 import { ViewportType } from "@cornerstonejs/core/dist/esm/enums";
@@ -23,41 +28,43 @@ loading.style.visibility = "visible";
 await init();
 
 const toolGroupId = "MAIN_IMAGE_TOOL_GROUP";
+cornerstoneTools.addTool(RectangleROITool);
 cornerstoneTools.addTool(LengthTool);
 cornerstoneTools.addTool(PanTool);
 cornerstoneTools.addTool(WindowLevelTool);
 cornerstoneTools.addTool(StackScrollTool);
 cornerstoneTools.addTool(ZoomTool);
-cornerstoneTools.addTool(CobbAngleTool);
 cornerstoneTools.addTool(AngleTool);
 
 const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
+toolGroup.addTool(RectangleROITool.toolName);
 toolGroup.addTool(LengthTool.toolName);
 toolGroup.addTool(WindowLevelTool.toolName);
 toolGroup.addTool(PanTool.toolName);
 toolGroup.addTool(ZoomTool.toolName);
 toolGroup.addTool(StackScrollTool.toolName);
-toolGroup.addTool(CobbAngleTool.toolName);
 toolGroup.addTool(AngleTool.toolName);
+
+/*toolGroup.setToolActive(PanTool.toolName, {
+  bindings: [{ numTouchPoints: 1 }],
+});*/
 
 toolGroup.setToolActive(ZoomTool.toolName, {
   bindings: [{ numTouchPoints: 2 }],
 });
 
+/*
 toolGroup.setToolActive(StackScrollTool.toolName, {
   bindings: [{ numTouchPoints: 3 }],
-});
+});*/
 
-toolGroup.setToolPassive(CobbAngleTool.toolName);
-toolGroup.setToolPassive(AngleTool.toolName);
-
-toolGroup.setToolActive(AngleTool.toolName, {
+/*toolGroup.setToolActive(AngleTool.toolName, {
   bindings: [
     {
       mouseButton: MouseBindings.Primary, // Left Click
     },
   ],
-});
+});*/
 
 /*toolGroup.setToolActive(LengthTool.toolName, {
   bindings: [
@@ -67,13 +74,30 @@ toolGroup.setToolActive(AngleTool.toolName, {
   ],
 });*/
 
-/*toolGroup.setToolActive(WindowLevelTool.toolName, {
+let selectedToolName = PanTool.toolName;
+
+toolGroup.setToolActive(PanTool.toolName, {
   bindings: [
     {
-      mouseButton: MouseBindings.Primary, // Left Click
+      mouseButton: MouseBindings.Primary,
     },
   ],
-});*/
+});
+
+/**toolGroup.addTool(CircleROITool.toolName);
+toolGroup.addTool(LengthTool.toolName);
+toolGroup.addTool(WindowLevelTool.toolName);
+toolGroup.addTool(PanTool.toolName);
+toolGroup.addTool(ZoomTool.toolName);
+toolGroup.addTool(StackScrollTool.toolName);
+toolGroup.addTool(AngleTool.toolName); */
+
+toolGroup.setToolPassive(RectangleROITool.toolName);
+toolGroup.setToolPassive(LengthTool.toolName);
+toolGroup.setToolPassive(WindowLevelTool.toolName);
+toolGroup.setToolPassive(ZoomTool.toolName);
+toolGroup.setToolPassive(StackScrollTool.toolName);
+toolGroup.setToolPassive(AngleTool.toolName);
 
 const renderingEngineId = "myRenderingEngine";
 const renderingEngine = new RenderingEngine(renderingEngineId);
@@ -87,8 +111,6 @@ loadingProgress.value = 0;
 
 const images = series.map(async (serie) => {
   const image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
-
-  console.log(image.data.string("x00200013"));
 
   loadingProgress.value += 1;
 
@@ -114,6 +136,34 @@ const viewportId = "MAIN_IMAGE";
 const element = document.getElementById("main-image");
 
 element.oncontextmenu = (e) => e.preventDefault();
+
+element.addEventListener(Enums.Events.VOI_MODIFIED, (evt) => {
+  const { lower, upper } = evt?.detail?.range;
+
+  const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(
+    lower,
+    upper
+  );
+
+  document.getElementById("window-level").innerHTML = `W: ${Math.round(
+    windowWidth
+  )} L: ${Math.round(windowCenter)}`;
+});
+
+element.addEventListener(Enums.Events.STACK_NEW_IMAGE, (evt) => {
+  const studyName = evt.detail.image.data.string("x0008103e");
+  const studyDate = image.data.string("x00080020");
+
+  const currentImage = evt.detail.imageIdIndex + 1;
+  const size = studies[studyName].length;
+
+  document.getElementById(
+    "stack-counter"
+  ).innerHTML = `${currentImage}/${size}`;
+  document.getElementById(
+    "study-name-date"
+  ).innerHTML = `${studyName} | ${studyDate}`;
+});
 
 const viewportInput = {
   viewportId,
@@ -155,12 +205,17 @@ viewport
     imageObj.stationName = image.data.string("x00081010");
     imageObj.studyDescription = image.data.string("x00081030");
 
-    console.log(
-      `${imageObj.patientName} (${imageObj.patientAge}) - ${imageObj.patientSex}`
-    );
-    console.log(imageObj.patientID);
-
-    console.log(imageObj);
+    document.getElementById(
+      "study-info-patient"
+    ).innerHTML = `${imageObj.patientName} (${imageObj.patientAge}) - ${imageObj.patientSex}`;
+    document.getElementById(
+      "study-info-mrn"
+    ).innerHTML = `MRN: ${imageObj.patientID}`;
+    document.getElementById("study-info-name").innerHTML =
+      imageObj.studyDescription;
+    document.getElementById("window-level").innerHTML = `W: ${Math.round(
+      imageObj.windowWidth
+    )} L: ${Math.round(imageObj.windowCenter)}`;
   });
 
 loading.style.visibility = "hidden";
@@ -224,9 +279,6 @@ document.getElementById("next-image").onclick = () => {
   newImageIdIndex = Math.min(newImageIdIndex, numImages - 1);
 
   viewport.setImageIdIndex(newImageIdIndex);
-
-  const image = viewport.csImage;
-  console.log(image.data.string("x00200013"));
 };
 
 document.getElementById("prev-image").onclick = () => {
@@ -239,6 +291,108 @@ document.getElementById("prev-image").onclick = () => {
   newImageIdIndex = Math.max(newImageIdIndex, 0);
 
   viewport.setImageIdIndex(newImageIdIndex);
-  const image = viewport.csImage;
-  console.log(image.data.string("x00200013"));
 };
+
+const removeToolActive = () => {
+  document.querySelectorAll(".tool-active").forEach((button) => {
+    button.classList.remove("tool-active");
+  });
+};
+
+const toolWindowLevel = document.getElementById("tool-window-level");
+toolWindowLevel.addEventListener("click", () => {
+  removeToolActive();
+  toolWindowLevel.classList.toggle("tool-active");
+
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+  toolGroup.setToolActive(WindowLevelTool.toolName, {
+    bindings: [
+      {
+        mouseButton: MouseBindings.Primary,
+      },
+    ],
+  });
+
+  toolGroup.setToolPassive(selectedToolName);
+
+  selectedToolName = WindowLevelTool.toolName;
+});
+
+const toolMove = document.getElementById("tool-move");
+toolMove.addEventListener("click", () => {
+  removeToolActive();
+  toolMove.classList.add("tool-active");
+
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+  toolGroup.setToolActive(ZoomTool.toolName, {
+    bindings: [
+      {
+        mouseButton: MouseBindings.Primary,
+      },
+    ],
+  });
+
+  toolGroup.setToolPassive(selectedToolName);
+
+  selectedToolName = ZoomTool.toolName;
+});
+
+const toolLength = document.getElementById("tool-length");
+toolLength.addEventListener("click", () => {
+  removeToolActive();
+  toolLength.classList.add("tool-active");
+
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
+  toolGroup.setToolPassive(selectedToolName);
+
+  toolGroup.setToolActive(LengthTool.toolName, {
+    bindings: [
+      {
+        mouseButton: MouseBindings.Primary,
+      },
+    ],
+  });
+
+  selectedToolName = LengthTool.toolName;
+});
+
+const toolAngle = document.getElementById("tool-angle");
+toolAngle.addEventListener("click", () => {
+  removeToolActive();
+  toolAngle.classList.add("tool-active");
+
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
+  toolGroup.setToolPassive(selectedToolName);
+
+  toolGroup.setToolActive(AngleTool.toolName, {
+    bindings: [
+      {
+        mouseButton: MouseBindings.Primary,
+      },
+    ],
+  });
+
+  selectedToolName = AngleTool.toolName;
+});
+
+const toolCobbAngle = document.getElementById("tool-cobb-angle");
+toolCobbAngle.addEventListener("click", () => {
+  removeToolActive();
+  toolCobbAngle.classList.add("tool-active");
+
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
+  toolGroup.setToolPassive(selectedToolName);
+
+  toolGroup.setToolActive(RectangleROITool.toolName, {
+    bindings: [
+      {
+        mouseButton: MouseBindings.Primary,
+      },
+    ],
+  });
+
+  selectedToolName = RectangleROITool.toolName;
+});

@@ -1,0 +1,109 @@
+@font-face {
+  font-family: "icomoon";
+  src: url("fonts/icomoon.eot?hdpawj");
+  src: url("fonts/icomoon.eot?hdpawj#iefix") format("embedded-opentype"),
+    url("fonts/icomoon.ttf?hdpawj") format("truetype"),
+    url("fonts/icomoon.woff?hdpawj") format("woff"),
+    url("fonts/icomoon.svg?hdpawj#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "icomoon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-cobb-angle:before {
+  content: "\e900";
+}
+.icon-icon-mpr-alt:before {
+  content: "\e901";
+}
+.icon-tool-angle:before {
+  content: "\e902";
+}
+.icon-tool-annotate:before {
+  content: "\e903";
+}
+.icon-tool-bidirectional:before {
+  content: "\e904";
+}
+.icon-tool-calibration:before {
+  content: "\e905";
+}
+.icon-tool-capture:before {
+  content: "\e906";
+}
+.icon-tool-cine:before {
+  content: "\e907";
+}
+.icon-tool-circle:before {
+  content: "\e908";
+}
+.icon-tool-create-threshold:before {
+  content: "\e909";
+}
+.icon-tool-crosshair:before {
+  content: "\e90a";
+}
+.icon-tool-elipse:before {
+  content: "\e90b";
+}
+.icon-tool-flip-horizontal:before {
+  content: "\e90c";
+}
+.icon-tool-fusion-color:before {
+  content: "\e90d";
+}
+.icon-tool-invert:before {
+  content: "\e90e";
+}
+.icon-tool-layout:before {
+  content: "\e90f";
+}
+.icon-tool-length:before {
+  content: "\e910";
+}
+.icon-tool-magnify:before {
+  content: "\e911";
+}
+.icon-tool-more-menu:before {
+  content: "\e912";
+}
+.icon-tool-move:before {
+  content: "\e913";
+}
+.icon-tool-probe:before {
+  content: "\e914";
+}
+.icon-tool-rectangle:before {
+  content: "\e915";
+}
+.icon-tool-reset:before {
+  content: "\e916";
+}
+.icon-tool-rotate-right:before {
+  content: "\e917";
+}
+.icon-tool-stack-scroll:before {
+  content: "\e918";
+}
+.icon-tool-window-level:before {
+  content: "\e919";
+}
+.icon-tool-zoom:before {
+  content: "\e91a";
+}
