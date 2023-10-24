@@ -4,21 +4,22 @@ import {
   Enums,
   utilities,
 } from "@cornerstonejs/core";
-import * as cornerstoneTools from "@cornerstonejs/tools";
 import {
+  addTool,
   ToolGroupManager,
   PanTool,
   WindowLevelTool,
   StackScrollTool,
   ZoomTool,
   LengthTool,
-  CobbAngleTool,
   AngleTool,
+  Enums as toolEnums,
 } from "@cornerstonejs/tools";
-import { ViewportType } from "@cornerstonejs/core/dist/esm/enums";
-import { MouseBindings } from "@cornerstonejs/tools/dist/esm/enums";
 
 import init from "./cornerstone/init";
+
+const { ViewportType } = Enums;
+const { MouseBindings } = toolEnums;
 
 async function main() {
   const loading = document.getElementById("loading");
@@ -29,16 +30,14 @@ async function main() {
   await init();
 
   const toolGroupId = "MAIN_IMAGE_TOOL_GROUP";
-  cornerstoneTools.addTool(CobbAngleTool);
-  cornerstoneTools.addTool(LengthTool);
-  cornerstoneTools.addTool(PanTool);
-  cornerstoneTools.addTool(WindowLevelTool);
-  cornerstoneTools.addTool(StackScrollTool);
-  cornerstoneTools.addTool(ZoomTool);
-  cornerstoneTools.addTool(AngleTool);
+  addTool(LengthTool);
+  addTool(PanTool);
+  addTool(WindowLevelTool);
+  addTool(StackScrollTool);
+  addTool(ZoomTool);
+  addTool(AngleTool);
 
   const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
-  toolGroup.addTool(CobbAngleTool.toolName);
   toolGroup.addTool(LengthTool.toolName);
   toolGroup.addTool(WindowLevelTool.toolName);
   toolGroup.addTool(PanTool.toolName);
@@ -46,34 +45,9 @@ async function main() {
   toolGroup.addTool(StackScrollTool.toolName);
   toolGroup.addTool(AngleTool.toolName);
 
-  /*toolGroup.setToolActive(PanTool.toolName, {
-  bindings: [{ numTouchPoints: 1 }],
-});*/
-
   toolGroup.setToolActive(ZoomTool.toolName, {
     bindings: [{ numTouchPoints: 2 }],
   });
-
-  /*
-toolGroup.setToolActive(StackScrollTool.toolName, {
-  bindings: [{ numTouchPoints: 3 }],
-});*/
-
-  /*toolGroup.setToolActive(AngleTool.toolName, {
-  bindings: [
-    {
-      mouseButton: MouseBindings.Primary, // Left Click
-    },
-  ],
-});*/
-
-  /*toolGroup.setToolActive(LengthTool.toolName, {
-  bindings: [
-    {
-      mouseButton: MouseBindings.Primary, // Left Click
-    },
-  ],
-});*/
 
   let selectedToolName = PanTool.toolName;
 
@@ -85,15 +59,6 @@ toolGroup.setToolActive(StackScrollTool.toolName, {
     ],
   });
 
-  /**toolGroup.addTool(CircleROITool.toolName);
-toolGroup.addTool(LengthTool.toolName);
-toolGroup.addTool(WindowLevelTool.toolName);
-toolGroup.addTool(PanTool.toolName);
-toolGroup.addTool(ZoomTool.toolName);
-toolGroup.addTool(StackScrollTool.toolName);
-toolGroup.addTool(AngleTool.toolName); */
-
-  toolGroup.setToolPassive(CobbAngleTool.toolName);
   toolGroup.setToolPassive(LengthTool.toolName);
   toolGroup.setToolPassive(WindowLevelTool.toolName);
   toolGroup.setToolPassive(ZoomTool.toolName);
@@ -378,26 +343,6 @@ toolGroup.addTool(AngleTool.toolName); */
     });
 
     selectedToolName = AngleTool.toolName;
-  });
-
-  const toolCobbAngle = document.getElementById("tool-cobb-angle");
-  toolCobbAngle.addEventListener("click", () => {
-    removeToolActive();
-    toolCobbAngle.classList.add("tool-active");
-
-    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
-
-    toolGroup.setToolPassive(selectedToolName);
-
-    toolGroup.setToolActive(CobbAngleTool.toolName, {
-      bindings: [
-        {
-          mouseButton: MouseBindings.Primary,
-        },
-      ],
-    });
-
-    selectedToolName = CobbAngleTool.toolName;
   });
 }
 
