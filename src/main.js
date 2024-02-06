@@ -3,6 +3,7 @@ import {
   imageLoader,
   Enums,
   utilities,
+  setUseCPURendering,
 } from "@cornerstonejs/core";
 import {
   addTool,
@@ -14,9 +15,12 @@ import {
   LengthTool,
   AngleTool,
   Enums as toolEnums,
+  StackScrollMouseWheelTool,
 } from "@cornerstonejs/tools";
 
 import init from "./cornerstone/init";
+
+setUseCPURendering(true);
 
 const { ViewportType } = Enums;
 const { MouseBindings } = toolEnums;
@@ -36,6 +40,7 @@ async function main() {
   addTool(StackScrollTool);
   addTool(ZoomTool);
   addTool(AngleTool);
+  addTool(StackScrollMouseWheelTool);
 
   const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
   toolGroup.addTool(LengthTool.toolName);
@@ -44,6 +49,7 @@ async function main() {
   toolGroup.addTool(ZoomTool.toolName);
   toolGroup.addTool(StackScrollTool.toolName);
   toolGroup.addTool(AngleTool.toolName);
+  toolGroup.addTool(StackScrollMouseWheelTool.toolName);
 
   toolGroup.setToolActive(ZoomTool.toolName, {
     bindings: [{ numTouchPoints: 2 }],
@@ -58,6 +64,12 @@ async function main() {
       },
     ],
   });
+
+  toolGroup.setToolActive(StackScrollTool.toolName, {
+    bindings: [{ numTouchPoints: 3 }],
+  });
+
+  toolGroup.setToolActive(StackScrollMouseWheelTool.toolName);
 
   toolGroup.setToolPassive(LengthTool.toolName);
   toolGroup.setToolPassive(WindowLevelTool.toolName);

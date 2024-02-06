@@ -1,10 +1,10 @@
 @font-face {
   font-family: "icomoon";
-  src: url("/clinux-ohif/fonts/icomoon.eot?hdpawj");
-  src: url("/clinux-ohif/fonts/icomoon.eot?hdpawj#iefix") format("embedded-opentype"),
-    url("/clinux-ohif/fonts/icomoon.ttf?hdpawj") format("truetype"),
-    url("/clinux-ohif/fonts/icomoon.woff?hdpawj") format("woff"),
-    url("/clinux-ohif/fonts/icomoon.svg?hdpawj#icomoon") format("svg");
+  src: url("/fonts/icomoon.eot?hdpawj");
+  src: url("/fonts/icomoon.eot?hdpawj#iefix") format("embedded-opentype"),
+    url("/fonts/icomoon.ttf?hdpawj") format("truetype"),
+    url("/fonts/icomoon.woff?hdpawj") format("woff"),
+    url("/fonts/icomoon.svg?hdpawj#icomoon") format("svg");
   font-weight: normal;
   font-style: normal;
   font-display: block;
