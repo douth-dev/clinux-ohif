@@ -25,6 +25,12 @@ setUseCPURendering(true);
 const { ViewportType } = Enums;
 const { MouseBindings } = toolEnums;
 
+const chunkArray = (array, size) =>
+  array.reduce((acc, _, i) => {
+    if (i % size === 0) acc.push(array.slice(i, i + size));
+    return acc;
+  }, []);
+
 async function main() {
   const loading = document.getElementById("loading");
   const loadingProgress = document.getElementById("loading-progress");
@@ -89,13 +95,28 @@ async function main() {
   loadingProgress.max = series.length;
   loadingProgress.value = 0;
 
-  const images = series.map(async (serie) => {
-    const image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
+  const chunkSeries = chunkArray(series, 1000);
+  let chunkImages = [];
 
-    loadingProgress.value += 1;
+  for (let i = 0; i < chunkSeries.length; i++) {
+    const process = async () => {
+      const images = chunkSeries[i].map(async (serie) => {
+        const image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
 
-    return image;
-  });
+        loadingProgress.value += 1;
+
+        return image;
+      });
+
+      await Promise.all(images);
+
+      chunkImages.push(images);
+    };
+
+    await process();
+  }
+
+  const images = chunkImages.flat();
 
   const studies = await Promise.all(images).then((images) => {
     images.sort((a, b) => {
