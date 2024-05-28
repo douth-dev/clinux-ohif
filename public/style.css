@@ -248,3 +248,13 @@ progress {
   align-items: center;
   user-select: none;
 }
+
+#error-box {
+  background-color: red;
+  color: #FFFFFF;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  position: absolute;
+  visibility: hidden;
+}

@@ -101,16 +101,29 @@ async function main() {
   for (let i = 0; i < chunkSeries.length; i++) {
     const process = async () => {
       const images = chunkSeries[i].map(async (serie) => {
-        const image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
+        let attempts = 0;
+        let image;
 
-        loadingProgress.value += 1;
+        while (attempts < 3) {
+          try {
+            image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
+            loadingProgress.value += 1;
+            return image;
+          } catch (error) {
+            attempts += 1;
+            if (attempts >= 3) {
+              const errorBox = document.getElementById("error-box");
+              errorBox.style.visibility = "visible";
+              errorBox.innerText = `Ocorreu um erro ao tentar carregar a serie ${serie}. Mensagem: ${error.message}`;
 
-        return image;
+              break;
+            }
+          }
+        }
       });
 
-      await Promise.all(images);
-
-      chunkImages.push(images);
+      const loadedImages = await Promise.all(images);
+      chunkImages.push(loadedImages);
     };
 
     await process();
