@@ -13,9 +13,8 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "@cornerstonejs/core": "^1.21.1",
-    "@cornerstonejs/dicom-image-loader": "^1.21.1",
-    "@cornerstonejs/streaming-image-volume-loader": "^1.21.1",
-    "@cornerstonejs/tools": "^1.21.1"
+    "@cornerstonejs/core": "^2.19.16",
+    "@cornerstonejs/dicom-image-loader": "^2.19.16",
+    "@cornerstonejs/tools": "^2.19.16"
   }
 }

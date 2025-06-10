@@ -1,22 +1,7 @@
-import dicomParser from "dicom-parser";
-import * as cornerstone from "@cornerstonejs/core";
 import cornerstoneDICOMImageLoader from "@cornerstonejs/dicom-image-loader";
 
-const { preferSizeOverAccuracy, useNorm16Texture } =
-  cornerstone.getConfiguration().rendering;
-
 export default function initCornerstoneDICOMImageLoader() {
-  cornerstoneDICOMImageLoader.external.cornerstone = cornerstone;
-  cornerstoneDICOMImageLoader.external.dicomParser = dicomParser;
-  cornerstoneDICOMImageLoader.configure({
-    useWebWorkers: true,
-    decodeConfig: {
-      convertFloatPixelDataToInt: false,
-      use16BitDataType: preferSizeOverAccuracy || useNorm16Texture,
-    },
-  });
-
-  let maxWebWorkers = 1;
+  let maxWebWorkers = 2;
 
   if (navigator.hardwareConcurrency) {
     maxWebWorkers = Math.min(navigator.hardwareConcurrency, 7);
@@ -33,5 +18,5 @@ export default function initCornerstoneDICOMImageLoader() {
     },
   };
 
-  cornerstoneDICOMImageLoader.webWorkerManager.initialize(config);
+  cornerstoneDICOMImageLoader.init(config);
 }

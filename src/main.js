@@ -15,7 +15,6 @@ import {
   LengthTool,
   AngleTool,
   Enums as toolEnums,
-  StackScrollMouseWheelTool,
 } from "@cornerstonejs/tools";
 
 import init from "./cornerstone/init";
@@ -46,7 +45,6 @@ async function main() {
   addTool(StackScrollTool);
   addTool(ZoomTool);
   addTool(AngleTool);
-  addTool(StackScrollMouseWheelTool);
 
   const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
   toolGroup.addTool(LengthTool.toolName);
@@ -55,7 +53,6 @@ async function main() {
   toolGroup.addTool(ZoomTool.toolName);
   toolGroup.addTool(StackScrollTool.toolName);
   toolGroup.addTool(AngleTool.toolName);
-  toolGroup.addTool(StackScrollMouseWheelTool.toolName);
 
   toolGroup.setToolActive(ZoomTool.toolName, {
     bindings: [{ numTouchPoints: 2 }],
@@ -72,10 +69,8 @@ async function main() {
   });
 
   toolGroup.setToolActive(StackScrollTool.toolName, {
-    bindings: [{ numTouchPoints: 3 }],
+    bindings: [{ numTouchPoints: 3, mouseButton: MouseBindings.Wheel }],
   });
-
-  toolGroup.setToolActive(StackScrollMouseWheelTool.toolName);
 
   toolGroup.setToolPassive(LengthTool.toolName);
   toolGroup.setToolPassive(WindowLevelTool.toolName);
@@ -107,9 +102,11 @@ async function main() {
         while (attempts < 3) {
           try {
             image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
+            console.log('hey')
             loadingProgress.value += 1;
             return image;
           } catch (error) {
+            console.log(error)
             attempts += 1;
             if (attempts >= 3) {
               const errorBox = document.getElementById("error-box");
@@ -145,7 +142,7 @@ async function main() {
       return studies;
     }, {});
   });
-
+console.log(studies)
   const viewportId = "MAIN_IMAGE";
   const element = document.getElementById("main-image");
 
