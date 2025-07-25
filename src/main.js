@@ -31,6 +31,55 @@ const chunkArray = (array, size) =>
     return acc;
   }, []);
 
+const updatePatientInfo = (image) => {
+  const imageObj = {};
+
+  // https://www.dicomlibrary.com/dicom/dicom-tags/
+
+  imageObj.windowCenter = image.data.string("x00281050") ?? 128;
+  imageObj.windowWidth = image.data.string("x00281051") ?? 256;
+  imageObj.accessionNumber = image.data.string("x00080050");
+  imageObj.acquisitionTime = image.data.string("x00080032");
+  imageObj.bitsAllocated = image.data.string("x00280100");
+  imageObj.highBit = image.data.string("x00280102");
+  imageObj.instanceNumber = image.data.string("x00200013");
+  imageObj.institutionName = image.data.string("x00080080");
+  imageObj.patientAge = image.data.string("x00101010");
+  imageObj.patientBirthDate = image.data.string("x00100030");
+  imageObj.patientID = image.data.string("x00100020");
+  imageObj.patientName = image.data.string("x00100010");
+  imageObj.patientSex = image.data.string("x00100040");
+  imageObj.pixelRepresentation = image.data.string("x00280103");
+  imageObj.seriesDescription = image.data.string("x0008103e");
+  imageObj.seriesNumber = image.data.string("x00200011");
+  imageObj.sliceLocation = image.data.string("x00201041");
+  imageObj.sliceThickness = image.data.string("x00180050");
+  imageObj.stationName = image.data.string("x00081010");
+  imageObj.studyDescription = image.data.string("x00081030");
+  imageObj.photometricInterpretation = image.data.string("x00280004");
+
+  let patientAge = imageObj.patientAge;
+
+  if (!patientAge && imageObj.patientBirthDate) {
+    const birthDate = dayjs(imageObj.patientBirthDate, "YYYYMMDD");
+    const today = dayjs();
+
+    patientAge = today.diff(birthDate, "year");
+  }
+
+  document.getElementById(
+    "study-info-patient"
+  ).innerHTML = `${imageObj.patientName} (${patientAge}) - ${imageObj.patientSex}`;
+  document.getElementById(
+    "study-info-mrn"
+  ).innerHTML = `MRN: ${imageObj.patientID}`;
+  document.getElementById("study-info-name").innerHTML =
+    imageObj.studyDescription;
+  document.getElementById("window-level").innerHTML = `W: ${Math.round(
+    imageObj.windowWidth
+  )} L: ${Math.round(imageObj.windowCenter)}`;
+};
+
 async function main() {
   const loading = document.getElementById("loading");
   const loadingProgress = document.getElementById("loading-progress");
@@ -162,7 +211,6 @@ async function main() {
   });
 
   element.addEventListener(Enums.Events.STACK_NEW_IMAGE, (evt) => {
-    console.log(1);
     const studyName =
       evt.detail.image.data.string("x0008103e") ??
       evt.detail.image.data.string("x00200010");
@@ -177,6 +225,8 @@ async function main() {
     document.getElementById(
       "study-name-date"
     ).innerHTML = `${studyName} | ${studyDate}`;
+
+    updatePatientInfo(evt.detail.image);
   });
 
   const viewportInput = {
@@ -195,52 +245,7 @@ async function main() {
     .then(() => {
       const image = viewport.csImage;
 
-      const imageObj = {};
-
-      // https://www.dicomlibrary.com/dicom/dicom-tags/
-
-      imageObj.windowCenter = image.data.string("x00281050") ?? 128;
-      imageObj.windowWidth = image.data.string("x00281051") ?? 256;
-      imageObj.accessionNumber = image.data.string("x00080050");
-      imageObj.acquisitionTime = image.data.string("x00080032");
-      imageObj.bitsAllocated = image.data.string("x00280100");
-      imageObj.highBit = image.data.string("x00280102");
-      imageObj.instanceNumber = image.data.string("x00200013");
-      imageObj.institutionName = image.data.string("x00080080");
-      imageObj.patientAge = image.data.string("x00101010");
-      imageObj.patientBirthDate = image.data.string("x00100030");
-      imageObj.patientID = image.data.string("x00100020");
-      imageObj.patientName = image.data.string("x00100010");
-      imageObj.patientSex = image.data.string("x00100040");
-      imageObj.pixelRepresentation = image.data.string("x00280103");
-      imageObj.seriesDescription = image.data.string("x0008103e");
-      imageObj.seriesNumber = image.data.string("x00200011");
-      imageObj.sliceLocation = image.data.string("x00201041");
-      imageObj.sliceThickness = image.data.string("x00180050");
-      imageObj.stationName = image.data.string("x00081010");
-      imageObj.studyDescription = image.data.string("x00081030");
-      imageObj.photometricInterpretation = image.data.string("x00280004");
-
-      let patientAge = imageObj.patientAge;
-
-      if (!patientAge && imageObj.patientBirthDate) {
-        const birthDate = dayjs(imageObj.patientBirthDate, "YYYYMMDD");
-        const today = dayjs();
-
-        patientAge = today.diff(birthDate, "year");
-      }
-
-      document.getElementById(
-        "study-info-patient"
-      ).innerHTML = `${imageObj.patientName} (${patientAge}) - ${imageObj.patientSex}`;
-      document.getElementById(
-        "study-info-mrn"
-      ).innerHTML = `MRN: ${imageObj.patientID}`;
-      document.getElementById("study-info-name").innerHTML =
-        imageObj.studyDescription;
-      document.getElementById("window-level").innerHTML = `W: ${Math.round(
-        imageObj.windowWidth
-      )} L: ${Math.round(imageObj.windowCenter)}`;
+      updatePatientInfo(image);
     });
 
   loading.style.visibility = "hidden";
@@ -268,7 +273,7 @@ async function main() {
     const studyName =
       studies[study]?.[0]?.data?.string("x0008103e") ??
       studies[study]?.[0]?.data?.string("x00081030") ??
-      'Unknown';
+      "Unknown";
 
     caption.innerHTML = studyName;
     caption.style.color = "#FFFFFF";
