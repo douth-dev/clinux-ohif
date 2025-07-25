@@ -36,8 +36,8 @@ const updatePatientInfo = (image) => {
 
   // https://www.dicomlibrary.com/dicom/dicom-tags/
 
-  imageObj.windowCenter = image.data.string("x00281050") ?? 128;
-  imageObj.windowWidth = image.data.string("x00281051") ?? 256;
+  imageObj.windowCenter = image.data.string("x00281050");
+  imageObj.windowWidth = image.data.string("x00281051");
   imageObj.accessionNumber = image.data.string("x00080050");
   imageObj.acquisitionTime = image.data.string("x00080032");
   imageObj.bitsAllocated = image.data.string("x00280100");
@@ -65,6 +65,11 @@ const updatePatientInfo = (image) => {
     const today = dayjs();
 
     patientAge = today.diff(birthDate, "year");
+  }
+
+  if (imageObj.photometricInterpretation === "RGB") {
+    imageObj.windowCenter = 128;
+    imageObj.windowWidth = 256;
   }
 
   document.getElementById(
@@ -211,10 +216,11 @@ async function main() {
   });
 
   element.addEventListener(Enums.Events.STACK_NEW_IMAGE, (evt) => {
+    const image = evt.detail.image;
     const studyName =
-      evt.detail.image.data.string("x0008103e") ??
-      evt.detail.image.data.string("x00200010");
-    const studyDate = evt.detail.image.data.string("x00080020");
+      image.data.string("x0008103e") ?? image.data.string("x00200010");
+    const studyDate = image.data.string("x00080020");
+    const photometricInterpretation = image.data.string("x00280004");
 
     const currentImage = evt.detail.imageIdIndex + 1;
     const size = studies[studyName].length;
@@ -227,6 +233,11 @@ async function main() {
     ).innerHTML = `${studyName} | ${studyDate}`;
 
     updatePatientInfo(evt.detail.image);
+
+    document.getElementById("tool-window-level").classList.remove("hidden");
+    if (photometricInterpretation === "RGB") {
+      document.getElementById("tool-window-level").classList.add("hidden");
+    }
   });
 
   const viewportInput = {
@@ -240,13 +251,9 @@ async function main() {
   const viewport = renderingEngine.getViewport(viewportId);
   toolGroup.addViewport(viewportId, renderingEngineId);
 
-  viewport
-    .setStack(studies[Object.keys(studies)[0]].map((study) => study.imageId))
-    .then(() => {
-      const image = viewport.csImage;
-
-      updatePatientInfo(image);
-    });
+  viewport.setStack(
+    studies[Object.keys(studies)[0]].map((study) => study.imageId)
+  );
 
   loading.style.visibility = "hidden";
   viewport.render();

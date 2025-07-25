@@ -258,3 +258,7 @@ progress {
   position: absolute;
   visibility: hidden;
 }
+
+.hidden {
+  display: none;
+}
