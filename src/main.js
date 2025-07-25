@@ -16,6 +16,7 @@ import {
   AngleTool,
   Enums as toolEnums,
 } from "@cornerstonejs/tools";
+import dayjs from "dayjs";
 
 import init from "./cornerstone/init";
 
@@ -102,11 +103,9 @@ async function main() {
         while (attempts < 3) {
           try {
             image = await imageLoader.loadAndCacheImage("wadouri:" + serie);
-            console.log('hey')
             loadingProgress.value += 1;
             return image;
           } catch (error) {
-            console.log(error)
             attempts += 1;
             if (attempts >= 3) {
               const errorBox = document.getElementById("error-box");
@@ -134,7 +133,8 @@ async function main() {
     });
 
     return images.reduce((studies, image) => {
-      const studyName = image.data.string("x0008103e");
+      const studyName =
+        image.data.string("x0008103e") ?? image.data.string("x00200010");
 
       studies[studyName] = studies[studyName] ?? [];
       studies[studyName].push(image);
@@ -142,7 +142,7 @@ async function main() {
       return studies;
     }, {});
   });
-console.log(studies)
+
   const viewportId = "MAIN_IMAGE";
   const element = document.getElementById("main-image");
 
@@ -162,8 +162,11 @@ console.log(studies)
   });
 
   element.addEventListener(Enums.Events.STACK_NEW_IMAGE, (evt) => {
-    const studyName = evt.detail.image.data.string("x0008103e");
-    const studyDate = image.data.string("x00080020");
+    console.log(1);
+    const studyName =
+      evt.detail.image.data.string("x0008103e") ??
+      evt.detail.image.data.string("x00200010");
+    const studyDate = evt.detail.image.data.string("x00080020");
 
     const currentImage = evt.detail.imageIdIndex + 1;
     const size = studies[studyName].length;
@@ -196,8 +199,8 @@ console.log(studies)
 
       // https://www.dicomlibrary.com/dicom/dicom-tags/
 
-      imageObj.windowCenter = image.data.string("x00281050");
-      imageObj.windowWidth = image.data.string("x00281051");
+      imageObj.windowCenter = image.data.string("x00281050") ?? 128;
+      imageObj.windowWidth = image.data.string("x00281051") ?? 256;
       imageObj.accessionNumber = image.data.string("x00080050");
       imageObj.acquisitionTime = image.data.string("x00080032");
       imageObj.bitsAllocated = image.data.string("x00280100");
@@ -205,6 +208,7 @@ console.log(studies)
       imageObj.instanceNumber = image.data.string("x00200013");
       imageObj.institutionName = image.data.string("x00080080");
       imageObj.patientAge = image.data.string("x00101010");
+      imageObj.patientBirthDate = image.data.string("x00100030");
       imageObj.patientID = image.data.string("x00100020");
       imageObj.patientName = image.data.string("x00100010");
       imageObj.patientSex = image.data.string("x00100040");
@@ -215,10 +219,20 @@ console.log(studies)
       imageObj.sliceThickness = image.data.string("x00180050");
       imageObj.stationName = image.data.string("x00081010");
       imageObj.studyDescription = image.data.string("x00081030");
+      imageObj.photometricInterpretation = image.data.string("x00280004");
+
+      let patientAge = imageObj.patientAge;
+
+      if (!patientAge && imageObj.patientBirthDate) {
+        const birthDate = dayjs(imageObj.patientBirthDate, "YYYYMMDD");
+        const today = dayjs();
+
+        patientAge = today.diff(birthDate, "year");
+      }
 
       document.getElementById(
         "study-info-patient"
-      ).innerHTML = `${imageObj.patientName} (${imageObj.patientAge}) - ${imageObj.patientSex}`;
+      ).innerHTML = `${imageObj.patientName} (${patientAge}) - ${imageObj.patientSex}`;
       document.getElementById(
         "study-info-mrn"
       ).innerHTML = `MRN: ${imageObj.patientID}`;
@@ -250,13 +264,19 @@ console.log(studies)
     image.style.borderRadius = "10px";
 
     const caption = document.createElement("div");
-    caption.innerHTML = study;
+
+    const studyName =
+      studies[study]?.[0]?.data?.string("x0008103e") ??
+      studies[study]?.[0]?.data?.string("x00081030") ??
+      'Unknown';
+
+    caption.innerHTML = studyName;
     caption.style.color = "#FFFFFF";
 
     container.appendChild(image);
     container.appendChild(caption);
 
-    container.onclick = (e) => {
+    container.onclick = () => {
       const viewport = renderingEngine.getViewport("MAIN_IMAGE");
 
       viewport.setStack(studies[study].map((study) => study.imageId));
